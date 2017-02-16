@@ -1,0 +1,28 @@
+version: '3'
+services:
+  vault_consul:
+    image: 'consul'
+    hostname: 'consul'
+    ports: 
+      - "8500:8500"
+    networks:
+      consulnet:
+        ipv4_address: 172.16.1.201
+      vaultnet:
+    command: "agent -ui -client=0.0.0.0 -advertise=172.16.1.201 -retry-join consul1"
+  vault:
+    image: vault
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - '8200:8200'
+    links:
+      - "vault_consul:consul"
+    volumes:
+      - ./data/vault:/tmp/vault
+      - ./vault/config.hcl:/vault/config/config.hcl
+    environment:
+      VAULT_ADDR: "http://127.0.0.1:8200"
+    networks:
+      - vaultnet
+    command: server

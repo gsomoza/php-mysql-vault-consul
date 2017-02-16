@@ -1,0 +1,38 @@
+#!/bin/bash
+
+usage() {
+  echo "Usage: $0 [all|consul|vault|app] COMMAND ARGS"
+  exit 1
+}
+
+COMMAND=
+TARGET="$1"
+
+if [ -z $TARGET ]; then 
+  usage
+fi
+
+if [ $TARGET != "consul" ] && [ $TARGET != "vault" ] && [ $TARGET != "app" ]; then
+  TARGET="all"
+  echo "Using target \"all\""
+else
+  shift
+fi
+
+if [ $TARGET == "all" ]; then
+  TARGET="-f consul.yml -f vault.yml"
+else
+  TARGET="-f ${TARGET}.yml"
+fi
+
+COMMAND="$1"
+if [ -z "$COMMAND" ]; then
+  usage
+elif [ "$1" == "up" ]; then
+  COMMAND="up -d"
+elif [ "$1" == "down" ]; then
+  COMMAND='down -v'
+fi
+shift
+
+docker-compose -f docker-compose.yml $TARGET $COMMAND $@
