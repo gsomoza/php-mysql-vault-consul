@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 usage() {
   echo "Usage: $0 [all|consul|vault|app] COMMAND ARGS"
@@ -20,7 +21,7 @@ else
 fi
 
 if [ $TARGET == "all" ]; then
-  TARGET="-f vault.yml -f app.yml -f consul.yml"
+  TARGET="-f consul.yml -f vault.yml -f app.yml"
 else
   TARGET="-f ${TARGET}.yml"
 fi

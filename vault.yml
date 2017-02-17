@@ -12,6 +12,7 @@ services:
     volumes:
       - ./data/vault:/tmp/vault
       - ./vault/config.hcl:/vault/config/config.hcl
+      - ./vault/mysql/readonly_grant.sql:/vault/config/mysql/readonly_grant.sql
     environment:
       VAULT_ADDR: "http://127.0.0.1:8200"
       CONSUL_ADVERTISE_ADDR: "172.16.1.200"
@@ -21,11 +22,3 @@ services:
       vaultnet:
         ipv4_address: 172.16.2.10
     command: server
-networks:
-  vaultnet:
-    ipam:
-      driver: default
-      config:
-      -
-        subnet: 172.16.2.0/24
-  consulnet:

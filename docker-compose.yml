@@ -1,15 +1,15 @@
 version: '3'
-#networks:
-#  consulnet:
-#    ipam:
-#      driver: default
-#      config:
-#      -
-#        subnet: 172.16.1.0/24
-#  vaultnet:
-#    ipam:
-#      driver: default
-#      config:
-#      -
-#        subnet: 172.16.2.0/24
-#  appnet:
+networks:
+  consulnet:
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 172.16.1.0/24
+  vaultnet:
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 172.16.2.0/24
+  appnet:

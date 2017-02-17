@@ -9,6 +9,8 @@ services:
       appnet: 
     command: "agent -advertise 172.16.1.202 -client 0.0.0.0 -retry-join consul1"
   mysql:
+    #build:
+    #  context: ./mysql
     image: mysql/mysql-server
     volumes:
       - "./data/mysql:/var/lib/mysql"
@@ -17,6 +19,8 @@ services:
       MYSQL_DATABASE: myapp
     networks:
       - appnet
+      - consulnet
+      - vaultnet
   app:
     build:
       context: ./app
@@ -28,7 +32,3 @@ services:
       - "8080:80"
     networks:
       - appnet
-      - vaultnet
-networks:
-  consulnet:
-  appnet:
