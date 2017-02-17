@@ -14,11 +14,13 @@ return [
         'invokables' => [
             // Fully\Qualified\InterfaceName::class => Fully\Qualified\ClassName::class,
             Helper\ServerUrlHelper::class => Helper\ServerUrlHelper::class,
+            \Doctrine\DBAL\Configuration::class => \Doctrine\DBAL\Configuration::class,
         ],
         // Use 'factories' for services provided by callbacks/factory classes.
         'factories' => [
             Application::class => ApplicationFactory::class,
             Helper\UrlHelper::class => Helper\UrlHelperFactory::class,
+            Doctrine\DBAL\Connection::class => App\Db\ConnectionFactory::class,
         ],
     ],
 ];

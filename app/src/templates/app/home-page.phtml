@@ -1,5 +1,11 @@
 <?php $this->layout('layout::default', ['title' => 'Home']) ?>
 
+<?php if ($isDbConnected): ?>
+    <div class="alert alert-success" role="alert"><strong>Success!</strong> Connection to MySQL server established!</div>
+<?php else: ?>
+    <div class="alert alert-danger" role="alert"><strong>Error:</strong> Could not connect to MySQL server!</div>
+<?php endif ?>
+
 <div class="jumbotron">
     <h1>Welcome to <span class="zf-green">zend-expressive</span></h1>
     <p>
