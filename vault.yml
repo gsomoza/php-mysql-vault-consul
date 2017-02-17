@@ -2,7 +2,7 @@ version: '3'
 services:
   vault_consul:
     image: 'consul'
-    hostname: 'consul'
+    hostname: 'vault_consul'
     ports: 
       - "8500:8500"
     networks:
@@ -26,3 +26,11 @@ services:
     networks:
       - vaultnet
     command: server
+networks:
+  vaultnet:
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 172.16.2.0/24
+  consulnet:

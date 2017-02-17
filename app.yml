@@ -1,0 +1,33 @@
+version: "3"
+services:
+  app_consul:
+    image: consul
+    hostname: app_consul
+    networks:
+      consulnet:
+        ipv4_address: 172.16.1.202
+      appnet: 
+    command: "agent -advertise 172.16.1.202 -client 0.0.0.0 -retry-join consul1"
+  mysql:
+    image: mysql/mysql-server
+    volumes:
+      - "./data/mysql:/var/lib/mysql"
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: myapp
+    networks:
+      - appnet
+  app:
+    build:
+      context: ./app
+    image: myapp:latest
+    volumes:
+      - "./app/src:/var/www/html"
+      - "./app/apache/vhost.conf:/etc/apache2/sites-available/000-default.conf"
+    ports:
+      - "8080:80"
+    networks:
+      - appnet
+networks:
+  consulnet:
+  appnet:

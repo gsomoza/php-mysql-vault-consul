@@ -20,7 +20,7 @@ else
 fi
 
 if [ $TARGET == "all" ]; then
-  TARGET="-f consul.yml -f vault.yml"
+  TARGET="-f vault.yml -f app.yml -f consul.yml"
 else
   TARGET="-f ${TARGET}.yml"
 fi

@@ -22,3 +22,10 @@ services:
     links:
       - consul1
     command: "agent -server -bootstrap-expect=3 -retry-join consul1 -client=0.0.0.0"
+networks:
+  consulnet:
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 172.16.1.0/24
