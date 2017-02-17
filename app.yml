@@ -20,7 +20,7 @@ services:
   app:
     build:
       context: ./app
-    image: myapp:latest
+    image: myapp
     volumes:
       - "./app/src:/var/www/html"
       - "./app/apache/vhost.conf:/etc/apache2/sites-available/000-default.conf"
@@ -28,6 +28,7 @@ services:
       - "8080:80"
     networks:
       - appnet
+      - vaultnet
 networks:
   consulnet:
   appnet:

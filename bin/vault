@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -i vault_vault_1 vault $@

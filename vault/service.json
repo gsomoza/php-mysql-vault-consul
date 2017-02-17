@@ -1,0 +1,23 @@
+{
+  "service": {
+    "name": "vault",
+    "tags": ["primary"],
+    "address": "172.16.2.10",
+    "port": 8200,
+    "enableTagOverride": false,
+    "checks": [
+      {
+        "id": "vault-health",
+        "http": "http://localhost:8200/v1/sys/health",
+        "interval": "5s",
+        "name": "Vault health check"
+      },
+      {
+        "id": "vault-seal-status",
+        "http": "http://localhost:8200/v1/sys/seal-status",
+        "interval": "300s",
+        "name": "Vault seal status"
+      }
+    ]
+  }
+}

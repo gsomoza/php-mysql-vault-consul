@@ -21,6 +21,8 @@ return [
             Application::class => ApplicationFactory::class,
             Helper\UrlHelper::class => Helper\UrlHelperFactory::class,
             Doctrine\DBAL\Connection::class => App\Db\ConnectionFactory::class,
+            \App\Consul\DiscoveryService::class => \App\Consul\DiscoveryServiceFactory::class,
+            \App\Vault\VaultService::class => \App\Vault\VaultServiceFactory::class,
         ],
     ],
 ];
