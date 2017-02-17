@@ -1,7 +1,14 @@
 <?php $this->layout('layout::default', ['title' => 'Home']) ?>
 
-<?php if ($isDbConnected): ?>
-    <div class="alert alert-success" role="alert"><strong>Success!</strong> Connection to MySQL server established!</div>
+<?php if (!empty($isDbConnected)): ?>
+    <div class="alert alert-success" role="alert">
+        <strong>Success!</strong> Connection to MySQL server established via Vault!
+    </div>
+    <?php if (!empty($message)): ?>
+        <div class="alert alert-success" role="alert">
+            <strong>Message from the DB:</strong> <?= $this->e($message) ?>
+        </div>
+    <?php endif ?>
 <?php else: ?>
     <div class="alert alert-danger" role="alert"><strong>Error:</strong> Could not connect to MySQL server!</div>
 <?php endif ?>

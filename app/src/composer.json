@@ -15,7 +15,8 @@
         "zendframework/zend-expressive-platesrenderer": "^1.0",
         "doctrine/dbal": "^2.5",
         "react/dns": "^0.4.4",
-        "jippi/vault-php-sdk": "^2.0"
+        "jippi/vault-php-sdk": "^2.0",
+        "ramsey/uuid": "^3.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8",

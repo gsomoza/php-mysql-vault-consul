@@ -37,6 +37,8 @@ class HomePageAction
             if (!$this->db->isConnected()) {
                 $this->db->connect();
             }
+            $result = $this->db->executeQuery('SELECT * FROM config WHERE `key` = \'hello_world\' LIMIT 1;')->fetch(\PDO::FETCH_ASSOC);
+            $data['message'] = $result['value'];
         } catch (DriverException $e) {
             // nothing
         }

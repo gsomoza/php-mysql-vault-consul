@@ -24,6 +24,14 @@ final class VaultService
     }
 
     /**
+     * @return Lease
+     */
+    public function getDatabaseLease(): Lease
+    {
+        return Lease::fromAuthBackendResponse($this->data->get('mysql/creds/readonly'));
+    }
+
+    /**
      * getMySQLPassword
      * @return string
      */

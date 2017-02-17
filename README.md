@@ -30,6 +30,10 @@ bin/vault auth # enter root token
 bin/vault write secret/app/mysql/password value=eureka1
 ```
 
+## Check All Services are Registered & Ready
+The `vault.yml` file exposes Vault's Consul client to the host machine. You can
+access the Consul UI by browsing to "http://127.0.0.1:8500"
+
 ### Let Vault Create MySQL Secrets Dynamically
 Next, we will mount the `mysql` secrets backend and configure it to create
 users for our database dynamically.
@@ -38,7 +42,6 @@ First use the mysql `root` user to create another user that has GRANT
 privileges on the `myapp` database and can connect to it from the `vault`
 container. The mysql `root` password cab be found towards the top of the log
 output of the `mysql` container.
-
 
 Then we will show Vault how to use this user:
 ```bash
@@ -60,9 +63,6 @@ bin/vault read mysql/roles/readonly
 Vault should print a username and password, that you (or an app) can use to
 make `SELECT` queries on the `myapp` database.
 
-## Check All Services are Registered & Ready
-The `vault.yml` file exposes Vault's Consul client to the host machine. You can
-access the Consul UI by browsing to "http://127.0.0.1:8500"
 
 ## Configure the PHP App
 
@@ -72,12 +72,12 @@ using PHP 7.0 or greater. Otherwise you'll have to login to the container:
 2. Copy `.dist` files inside `app/src/config/autoload` and adjust if necessary.
 3. Then create a policy in Vault for the app:
 ```bash
-cat ./app/vault/acl.hcl | bin/vault policy-write app -
+bin/vault policy-write app -< ./app/vault/acl.hcl
 ```
 
 4. And a token with that policy:
 ```bash
-bin/vault token-generate -policy=app -format=json > app/src/data/vault_token.json
+bin/vault token-create -policy=app -format=json > app/src/data/vault_token.json
 ```
 
 Now you should be able to browse to http://localhost:8080/ and see Vault in

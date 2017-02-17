@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+tty="-it"
+
+if [ "$1" == "--" ]; then shift; fi
+
+cmd="docker exec $tty vault_mysql_1 mysql"
+
+echo "> $cmd $@" >&2
+eval "$cmd $@"
+

@@ -2,44 +2,28 @@
 set -e
 
 tty="-i"
+
+while getopts "i" opt; do
+  case $opt in
+    i)
+      tty="-it"
+      shift
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [ "$1" == "--" ]; then shift; fi
+
 if [ "$1" == "unseal" ] || [ "$1" == "auth" ]; then
   tty="-it"
 fi
 
 VAULT="docker exec $tty vault_vault_1 vault"
-ARGS="$@"
 
-if [ $1 == "-quick=mysql" ]; then
-  if [ $# -lt 4 ]; then
-    echo "Usage: $0 -quick=mysql USERNAME PASSWORD HOST:PORT"
-    exit 1
-  fi
-
-  echo -n "> [PENDING] bin/vault mount mysql"
-  mount_exists=`$VAULT mounts | grep -q mysql`
-  if [[ $? -eq 0 ]] ; then
-    eval $VAULT mount mysql
-  fi
-  echo -en "\r           "
-  echo -e "> [DONE] bin/vault mount mysql"
-
-  CMD="bin/vault write mysql/config/connection connection_url=${2}:${3}@tcp(${4})/"
-  echo -n "> [PENDING] $CMD"
-  eval $VAULT write mysql/config/connection \
-    connection_url="${2}:${3}@tcp(${4})/"
-  eval $VAULT write mysql/config/lease \
-    lease=3h \
-    lease_max=24h
-  eval $VAULT write mysql/roles/readonly \
-    sql="CREATE USER '{{name}}'@'%' IDENTIFIED BY '{{password}}';GRANT SELECT ON *.* TO '{{name}}'@'%';"
-  echo -ne "\r"
-  echo "> [DONE] $CMD"
-
-  echo "Done!"
-  echo "You can now get dynamic MySQL credentials by running:"
-  echo "  $ vault read mysql/creds/readonly"
-else
-  $VAULT $ARGS
-fi
-
+echo "> $VAULT $@" >&2
+eval "$VAULT $@"
 

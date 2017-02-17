@@ -14,6 +14,7 @@ services:
     image: mysql/mysql-server
     volumes:
       - "./data/mysql:/var/lib/mysql"
+      - "./mysql/init/seeds.sql:/docker-entrypoint-initdb.d/seeds.sql"
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: 1
       MYSQL_DATABASE: myapp
@@ -28,7 +29,9 @@ services:
     volumes:
       - "./app/src:/var/www/html"
       - "./app/apache/vhost.conf:/etc/apache2/sites-available/000-default.conf"
+      - "./app/php/xdebug.ini:/usr/local/etc/php/conf.d/20-xdebug.ini"
     ports:
       - "8080:80"
     networks:
       - appnet
+      - vaultnet
