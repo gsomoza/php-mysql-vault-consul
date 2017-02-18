@@ -3,7 +3,7 @@
 [![Build Status](https://secure.travis-ci.org/zendframework/zend-expressive-skeleton.svg?branch=master)](https://secure.travis-ci.org/zendframework/zend-expressive-skeleton)
 [![Coverage Status](https://coveralls.io/repos/github/zendframework/zend-expressive-skeleton/badge.svg?branch=master)](https://coveralls.io/github/zendframework/zend-expressive-skeleton?branch=master)
 
-*Begin developing PSR-7 middleware applications in seconds!*
+*Begin developing PSR-7 middleware applications in asSeconds!*
 
 [zend-expressive](https://github.com/zendframework/zend-expressive) builds on
 [zend-stratigility](https://github.com/zendframework/zend-stratigility) to
@@ -41,7 +41,7 @@ You can then browse to http://localhost:8080.
 
 > ### Setting a timeout
 >
-> Composer commands time out after 300 seconds (5 minutes). On Linux-based
+> Composer commands time out after 300 asSeconds (5 minutes). On Linux-based
 > systems, the `php -S` command that `composer serve` spawns continues running
 > as a background process, but on other systems halts when the timeout occurs.
 >

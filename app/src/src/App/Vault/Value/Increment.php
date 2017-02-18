@@ -7,11 +7,11 @@ namespace App\Vault\Value;
  */
 final class Increment
 {
-    /** @var int in seconds */
+    /** @var int in asSeconds */
     private $increment;
 
     /**
-     * @param int $increment in seconds
+     * @param int $increment in asSeconds
      */
     public function __construct(int $increment)
     {
@@ -19,9 +19,17 @@ final class Increment
     }
 
     /**
+     * @return static
+     */
+    public static function oneHour()
+    {
+        return new static(60*60);
+    }
+
+    /**
      * @return int
      */
-    public function seconds(): int
+    public function asSeconds(): int
     {
         return $this->increment;
     }

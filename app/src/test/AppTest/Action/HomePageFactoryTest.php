@@ -4,6 +4,7 @@ namespace AppTest\Action;
 
 use App\Action\HomePageAction;
 use App\Action\HomePageFactory;
+use Doctrine\DBAL\Connection;
 use Interop\Container\ContainerInterface;
 use Zend\Expressive\Router\RouterInterface;
 use Zend\Expressive\Template\TemplateRendererInterface;
@@ -17,8 +18,10 @@ class HomePageFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->container = $this->prophesize(ContainerInterface::class);
         $router = $this->prophesize(RouterInterface::class);
+        $connection = $this->prophesize(Connection::class);
 
         $this->container->get(RouterInterface::class)->willReturn($router);
+        $this->container->get(Connection::class)->willReturn($connection);
     }
 
     public function testFactoryWithoutTemplate()

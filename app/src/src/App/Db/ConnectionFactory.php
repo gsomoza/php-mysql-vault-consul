@@ -23,8 +23,8 @@ final class ConnectionFactory
         $vault = $container->get(VaultService::class);
         $dbLease = $vault->getDatabaseLease();
 
-        $dbConnectionConfig['password'] = $dbLease->getData('password');
-        $dbConnectionConfig['user'] = $dbLease->getData('username');
+        $dbConnectionConfig['password'] = $dbLease->getValue('password');
+        $dbConnectionConfig['user'] = $dbLease->getValue('username');
 
         $dbalConfig = $container->get(Configuration::class);
 

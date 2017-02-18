@@ -3,14 +3,12 @@ declare(strict_types=1);
 
 namespace App\Vault;
 
-use App\Vault\Lease\Policy;
-use App\Vault\Value\Increment;
-use Jippi\Vault\Services\Sys;
+use App\Vault\Lease\NoOpRenewPolicy;
+use App\Vault\Lease\RenewPolicy;
 use Psr\Http\Message\ResponseInterface;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Webmozart\Assert\Assert;
-use Zend\Diactoros\Response\JsonResponse;
 
 /**
  * @author Gabriel Somoza <gabriel@strategery.io>
@@ -27,12 +25,10 @@ final class Lease
     private $renewable;
     /** @var array<string,string> */
     private $data;
-    /** @var string */
-    private $warnings;
     /** @var \DateTimeImmutable */
     private $createdAt;
-    /** @var Policy */
-    private $policy;
+    /** @var RenewPolicy */
+    private $renewPolicy;
 
     /**
      * Lease constructor.
@@ -41,8 +37,8 @@ final class Lease
      * @param int $leaseDuration
      * @param bool $renewable
      * @param array $data
-     * @param string $warnings
      * @param \DateTimeImmutable $createdAt
+     * @param RenewPolicy $renewPolicy
      */
     public function __construct(
         UuidInterface $requestId,
@@ -50,33 +46,40 @@ final class Lease
         int $leaseDuration,
         bool $renewable,
         array $data = [],
-        string $warnings = null,
-        \DateTimeImmutable $createdAt
+        \DateTimeImmutable $createdAt = null,
+        RenewPolicy $renewPolicy = null
     ) {
         $this->requestId = $requestId;
         $this->leaseId = $leaseId;
         $this->leaseDuration = $leaseDuration;
         $this->renewable = $renewable;
         $this->data = $data;
-        $this->warnings = $warnings;
+
+        if (null === $createdAt) {
+            $createdAt = new \DateTimeImmutable();
+        }
         $this->createdAt = $createdAt;
-        $this->policy = new Policy();
+
+        if (null === $renewPolicy) {
+            $renewPolicy = new NoOpRenewPolicy();
+        }
+        $this->renewPolicy = $renewPolicy;
     }
 
     /**
      * @param ResponseInterface $response
-     * @param \DateTimeInterface|null $responseTime
+     * @param \DateTimeInterface|null $respondedAt
+     * @param RenewPolicy $renewPolicy
      * @return Lease
      */
     public static function fromAuthBackendResponse(
         ResponseInterface $response,
-        \DateTimeInterface $responseTime = null
+        \DateTimeInterface $respondedAt = null,
+        RenewPolicy $renewPolicy = null
     ): Lease
     {
-        if (null == $responseTime) {
-            $responseTime = new \DateTimeImmutable();
-        } else {
-            $responseTime = clone $responseTime;
+        if ($respondedAt instanceof \DateTime) {
+            $respondedAt = \DateTimeImmutable::createFromMutable($respondedAt);
         }
 
         $body = \json_decode((string) $response->getBody(), true);
@@ -87,44 +90,93 @@ final class Lease
             (int) $body['lease_duration'],
             !empty($body['renewable']),
             $body['data'],
-            (string) $body['warnings'],
-            $responseTime
+            $respondedAt,
+            $renewPolicy
         );
     }
 
     /**
-     * @param Policy $policy
+     * @param Lease $renewedLease
      * @return Lease
      */
-    public function withPolicy(Policy $policy)
+    private function updateFromRenewedLease(Lease $renewedLease): self
     {
-        $instance = clone $this;
-        $instance->policy = $policy;
+        $this->createdAt = new \DateTimeImmutable();
+        $this->leaseDuration = $renewedLease->leaseDuration;
+        $this->renewable = $renewedLease->renewable;
 
-        return $instance;
-    }
-
-    /**
-     * @param Sys $service
-     * @param Increment $increment
-     * @return self
-     */
-    public function renew(Increment $increment, Sys $service): self
-    {
-        /** @var ResponseInterface $response */
-        $response = $service->renew($this->leaseId, $increment->seconds());
-
-        return self::fromAuthBackendResponse($response);
+        return $this;
     }
 
     /**
      * @param $key
      * @return string
      */
-    public function getData($key): string
+    public function getValue($key): string
     {
+        $this->renew();
         Assert::keyExists($this->data, $key);
 
         return $this->data[$key];
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        $this->renew();
+
+        return $this->data;
+    }
+
+    /**
+     * @return int Duration of the lease in asSeconds
+     */
+    public function getDuration()
+    {
+        $this->renew();
+
+        return $this->leaseDuration;
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getCreatedAt()
+    {
+        $this->renew();
+
+        return $this->createdAt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        $this->renew();
+
+        return $this->leaseId;
+    }
+
+    /**
+     * @return void
+     */
+    private function renew()
+    {
+        $this->renewPolicy->renew($this, function (Lease $renewedLease) {
+            $this->updateFromRenewedLease($renewedLease);
+        });
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRenewable()
+    {
+        $this->renew();
+
+        return $this->renewable;
     }
 }
