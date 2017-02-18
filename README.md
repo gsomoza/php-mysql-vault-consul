@@ -88,6 +88,6 @@ action!
 3. If all works, you should see a green success message in the homepage.
 
 ## TODOs
-1. Have the app automatically renew leases
-2. Find a way to improve the setup with `vault_token.json`, if possible
-3. Create helper scripts that will automate the Vault setup.
+1. Cache & automatically renew leases
+2. Use an Auth Backend (probably App Role) to avoid having to create and use `vault_token.json`
+3. Create helper scripts that will automate the Vault setup
