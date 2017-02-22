@@ -6,34 +6,34 @@ usage() {
   exit 1
 }
 
-COMMAND=
-TARGET="$1"
+cmd=
+target="$1"
 
-if [ -z $TARGET ]; then 
+if [ -z $target ]; then
   usage
 fi
 
-if [ $TARGET != "consul" ] && [ $TARGET != "vault" ] && [ $TARGET != "app" ]; then
-  TARGET="all"
+if [ $target != "consul" ] && [ $target != "vault" ] && [ $target != "app" ]; then
+  target="all"
   echo "Using target \"all\""
 else
   shift
 fi
 
-if [ $TARGET == "all" ]; then
-  TARGET="-f consul.yml -f vault.yml -f app.yml"
+if [ $target == "all" ]; then
+  target="-f consul.yml -f vault.yml -f app.yml"
 else
-  TARGET="-f ${TARGET}.yml"
+  target="-f ${target}.yml"
 fi
 
-COMMAND="$1"
-if [ -z "$COMMAND" ]; then
+cmd="$1"
+if [ -z "$cmd" ]; then
   usage
 elif [ "$1" == "up" ]; then
-  COMMAND="up -d"
+  cmd="up -d"
 elif [ "$1" == "down" ]; then
-  COMMAND='down -v'
+  cmd='down -v'
 fi
 shift
 
-docker-compose -f docker-compose.yml $TARGET $COMMAND $@
+docker-compose -f docker-compose.yml $target $cmd $@
