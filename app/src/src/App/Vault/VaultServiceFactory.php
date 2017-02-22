@@ -3,7 +3,7 @@
 namespace App\Vault;
 
 use App\Consul\DiscoveryService;
-use Jippi\Vault\ServiceFactory;
+use Jippi\Vault\ServiceFactory as VaultApiFactory;
 use Jippi\Vault\Services\Data;
 use Psr\Container\ContainerInterface;
 
@@ -17,8 +17,8 @@ final class VaultServiceFactory
         $tokenPath = $container->get('config')['vault']['token'];
         $discovery = $container->get(DiscoveryService::class);
 
-        $vaultIp = $discovery->findServiceIP('vault');
-        $serviceFactory = new ServiceFactory([
+        $vaultIp = $discovery->findServiceIP('vault'); // query IP for vault.service.consul
+        $serviceFactory = new VaultApiFactory([
             'base_uri' => 'http://' . $vaultIp . ':8200',
             'headers' => [
                 'User-Agent' => 'Vault-PHP-SDK/1.0',
@@ -28,7 +28,7 @@ final class VaultServiceFactory
         ]);
 
         /** @var Data $data */
-        $data = $serviceFactory->get('data');
+        $data = $serviceFactory->get('data'); // get Vault's "data" API
 
         return new VaultService($data);
     }

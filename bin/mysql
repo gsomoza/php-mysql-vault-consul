@@ -2,11 +2,13 @@
 set -e
 
 tty="-it"
+container=$(docker-compose -f docker-compose.yml -f app.yml -f vault.yml -f consul.yml ps -q mysql)
 
 if [ "$1" == "--" ]; then shift; fi
 
-cmd="docker exec $tty vault_mysql_1 mysql"
+cmd="docker exec $tty $container mysql"
+cmd_short="docker exec $tty ${container:0:8} mysql"
 
-echo "> $cmd $@" >&2
+echo "> $cmd_short $@" >&2
 eval "$cmd $@"
 

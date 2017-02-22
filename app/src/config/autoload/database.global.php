@@ -5,8 +5,8 @@ return [
         'connection' => [
             'host' => 'mysql',
             'dbname' => 'myapp',
-            'user' => 'user',
-            'password' => 'secret',
+            'user' => '', // ASK VAULT!
+            'password' => '', // ASK VAULT!
             'driver' => 'pdo_mysql',
         ],
     ],

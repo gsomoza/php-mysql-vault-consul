@@ -22,8 +22,11 @@ if [ "$1" == "unseal" ] || [ "$1" == "auth" ]; then
   tty="-it"
 fi
 
-VAULT="docker exec $tty vault_vault_1 vault"
+container=$(docker-compose -f docker-compose.yml -f app.yml -f vault.yml -f consul.yml ps -q vault)
 
-echo "> $VAULT $@" >&2
-eval "$VAULT $@"
+cmd="docker exec $tty $container vault"
+cmd_short="docker exec $tty ${container:0:8} vault"
+
+echo "> $cmd_short $@" >&2
+eval "$cmd $@"
 

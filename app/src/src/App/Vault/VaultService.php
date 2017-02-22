@@ -25,6 +25,10 @@ final class VaultService
      */
     public function getDatabaseLease(): Lease
     {
-        return Lease::fromAuthBackendResponse($this->data->get('mysql/creds/readonly'));
+        // queries Vault's MySQL Secret Backend at
+        // http://vault:8200/v1/mysql/creds/readonly
+        return Lease::fromAuthBackendResponse(
+            $this->data->get('mysql/creds/readonly')
+        );
     }
 }
