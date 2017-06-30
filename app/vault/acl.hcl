@@ -1,4 +1,4 @@
-path "mysql/creds/readonly" {
+path "database/creds/readonly" {
   policy = "read"
 }
 
