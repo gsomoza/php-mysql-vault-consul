@@ -22,6 +22,8 @@ services:
       - appnet
       - consulnet
       - vaultnet
+    ports:
+      - '8306:3306'
   app:
     build:
       context: ./app
