@@ -28,7 +28,7 @@ final class VaultService
         // queries Vault's MySQL Secret Backend at
         // http://vault:8200/v1/mysql/creds/readonly
         return Lease::fromAuthBackendResponse(
-            $this->data->get('mysql/creds/readonly')
+            $this->data->get('database/creds/readonly')
         );
     }
 }

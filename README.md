@@ -43,21 +43,30 @@ privileges on the `myapp` database and can connect to it from the `vault`
 container. The mysql `root` password cab be found towards the top of the log
 output of the `mysql` container.
 
-Then we will show Vault how to use this user:
+```mysql
+CREATE USER 'vault'@'%' IDENTIFIED BY 'some_pass';
+GRANT ALL PRIVILEGES ON *.* TO 'vault'@'%' WITH GRANT OPTION;
+# (the privileges above could be more restrictive)
+FLUSH PRIVILEGES;
+```
+
+Then we will show Vault how to connect with that user:
 ```bash
-bin/vault mount mysql
-bin/vault write mysql/config/connection \
-  connection_url="admin:adminpass@tcp(mysql:3306)"
-bin/vault write mysql/config/lease lease=1h lease_max=24h
-bin/vault write mysql/roles/readonly sql=@/vault/config/mysql/readonly.sql
-# I recommend checking that file out to understand what's going on
+bin/vault mount database
+bin/vault write database/config/mysql "plugin_name=mysql-database-plugin  connection_url=\"vault:some_pass@tcp(mysql:3306)/myapp\" allowed_roles=readonly"
+bin/vault write database/roles/readonly \
+	db_name=mysql \
+	default_ttl=1h \
+	max_ttl=24h \
+    creation_statements=@/vault/config/mysql/readonly_grant.sql
+# recommended: review that file to understand what's going on
 ```
 
 You should now be able to ask Vault for access to the "myapp" database by
-reading from the role we just created:
+reading credentials (`creds`) from the role we just created:
 
 ```bash
-bin/vault read mysql/roles/readonly
+bin/vault read database/creds/readonly
 ```
 
 Vault should print a username and password, that you (or an app) can use to
@@ -67,8 +76,8 @@ make `SELECT` queries on the `myapp` database.
 ## Configure the PHP App
 
 1. Install dependencies using Composer. You can do this on the host if you're
-using PHP 7.0 or greater. Otherwise you'll have to login to the container:
-`./compose exec app bash`
+   using PHP 7.0 or greater. Otherwise you'll have to login to the container:
+   `./compose exec app bash`
 2. Copy `.dist` files inside `app/src/config/autoload` and adjust if necessary.
 3. Then create a policy in Vault for the app:
 ```bash
